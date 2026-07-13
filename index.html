@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="מחשבון השקעה בדירה בפורטוגל — IMT, בולים, מיסוי שכירות, משכנתא ומודל יציאה">
+<title>מחשבון השקעה בדירה בפורטוגל</title>
+</head>
+<body>
+<style>
+  :root{
+    --paper:#F1F4F7; --surface:#FFFFFF; --surface-2:#F7F9FB;
+    --ink:#182430; --ink-soft:#4A5A69; --ink-faint:#8194A4;
+    --line:#DCE3EA; --line-strong:#C6D0DA;
+    --accent:#2C6BB3; --accent-soft:#E7F0FA; --accent-ink:#1D4E86;
+    --pos:#1F7A55; --pos-soft:#E4F2EB;
+    --neg:#BE4126; --neg-soft:#FAE9E4;
+    --gold:#B8863B;
+    --shadow:0 1px 2px rgba(24,36,48,.06),0 8px 24px rgba(24,36,48,.06);
+    --radius:14px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --paper:#0E151C; --surface:#161F29; --surface-2:#1B2530;
+      --ink:#E7EDF3; --ink-soft:#A7B6C4; --ink-faint:#6E8091;
+      --line:#26313D; --line-strong:#33414F;
+      --accent:#6FA8E6; --accent-soft:#1A2A3C; --accent-ink:#9CC4F0;
+      --pos:#57C48D; --pos-soft:#12291F;
+      --neg:#E0765C; --neg-soft:#2C1712;
+      --gold:#D0A85E;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"]{
+    --paper:#F1F4F7; --surface:#FFFFFF; --surface-2:#F7F9FB;
+    --ink:#182430; --ink-soft:#4A5A69; --ink-faint:#8194A4;
+    --line:#DCE3EA; --line-strong:#C6D0DA;
+    --accent:#2C6BB3; --accent-soft:#E7F0FA; --accent-ink:#1D4E86;
+    --pos:#1F7A55; --pos-soft:#E4F2EB;
+    --neg:#BE4126; --neg-soft:#FAE9E4; --gold:#B8863B;
+    --shadow:0 1px 2px rgba(24,36,48,.06),0 8px 24px rgba(24,36,48,.06);
+  }
+  :root[data-theme="dark"]{
+    --paper:#0E151C; --surface:#161F29; --surface-2:#1B2530;
+    --ink:#E7EDF3; --ink-soft:#A7B6C4; --ink-faint:#6E8091;
+    --line:#26313D; --line-strong:#33414F;
+    --accent:#6FA8E6; --accent-soft:#1A2A3C; --accent-ink:#9CC4F0;
+    --pos:#57C48D; --pos-soft:#12291F;
+    --neg:#E0765C; --neg-soft:#2C1712; --gold:#D0A85E;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0}
+  .app{
+    direction:rtl; text-align:right;
+    font-family:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    color:var(--ink); background:var(--paper);
+    line-height:1.5; -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  .num{font-variant-numeric:tabular-nums; letter-spacing:.01em}
+
+  header.hero{
+    padding:34px clamp(16px,4vw,54px) 20px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,var(--surface),var(--paper));
+  }
+  .kicker{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:12px; font-weight:600; letter-spacing:.14em;
+    color:var(--accent-ink); text-transform:uppercase;
+    background:var(--accent-soft); padding:5px 12px; border-radius:999px;
+  }
+  .tile{width:13px;height:13px;border-radius:3px;
+    background:
+      linear-gradient(135deg,var(--accent) 0 50%,transparent 50%),
+      var(--gold);
+    box-shadow:inset 0 0 0 1.5px var(--surface);}
+  h1{
+    font-size:clamp(26px,3.4vw,38px); font-weight:700; margin:16px 0 6px;
+    letter-spacing:-.01em; text-wrap:balance; max-width:20ch;
+  }
+  .sub{color:var(--ink-soft); font-size:clamp(14px,1.4vw,16px); max-width:64ch; margin:0}
+
+  .layout{
+    display:grid; gap:22px;
+    grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);
+    padding:22px clamp(16px,4vw,54px) 60px;
+    align-items:start;
+  }
+  @media (max-width:900px){ .layout{grid-template-columns:1fr} }
+
+  .card{
+    background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius); box-shadow:var(--shadow);
+    overflow:hidden; margin-bottom:20px;
+  }
+  .card-h{
+    display:flex; align-items:baseline; justify-content:space-between;
+    gap:10px; padding:15px 18px; border-bottom:1px solid var(--line);
+    background:var(--surface-2);
+  }
+  .card-h h2{font-size:15px; font-weight:700; margin:0; letter-spacing:.01em}
+  .card-h .idx{font-size:12px; font-weight:600; color:var(--ink-faint)}
+  .card-b{padding:16px 18px}
+
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px 16px}
+  @media (max-width:520px){ .grid2{grid-template-columns:1fr} }
+
+  .field{display:flex; flex-direction:column; gap:5px; min-width:0}
+  .field label{font-size:12.5px; font-weight:600; color:var(--ink-soft)}
+  .field .hint{font-size:11px; color:var(--ink-faint); font-weight:400}
+  .in-wrap{position:relative; display:flex; align-items:center}
+  .in-wrap .unit{
+    position:absolute; inset-inline-start:11px; font-size:13px;
+    color:var(--ink-faint); pointer-events:none; font-weight:600;
+  }
+  input[type="number"],input[type="date"],select{
+    width:100%; font:inherit; font-size:14px; color:var(--ink);
+    background:var(--surface-2); border:1px solid var(--line-strong);
+    border-radius:9px; padding:9px 11px; outline:none; transition:border-color .15s,box-shadow .15s;
+  }
+  .in-wrap.has-unit input{padding-inline-start:30px}
+  input:focus,select:focus{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
+  input.num{font-variant-numeric:tabular-nums}
+
+  .seg{display:flex; gap:6px; background:var(--surface-2); padding:5px; border-radius:11px; border:1px solid var(--line)}
+  .seg button{
+    flex:1; font:inherit; font-size:13.5px; font-weight:600; cursor:pointer;
+    padding:9px 8px; border-radius:8px; border:1px solid transparent;
+    background:transparent; color:var(--ink-soft); transition:.15s;
+  }
+  .seg button[aria-pressed="true"]{
+    background:var(--surface); color:var(--accent-ink);
+    border-color:var(--line-strong); box-shadow:0 1px 2px rgba(0,0,0,.08);
+  }
+  .hidden{display:none !important}
+
+  .check{display:flex; gap:10px; align-items:flex-start; margin-top:14px;
+    padding:12px 13px; background:var(--accent-soft); border:1px solid var(--line);
+    border-radius:10px; font-size:12.5px; color:var(--ink-soft); cursor:pointer; line-height:1.5}
+  .check input{margin-top:2px; width:16px; height:16px; accent-color:var(--accent); flex:0 0 auto; cursor:pointer}
+  .check b{color:var(--accent-ink)}
+
+  /* results */
+  .results{position:sticky; top:16px}
+  @media (max-width:900px){ .results{position:static} }
+  .kpis{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px}
+  .kpi{
+    background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius); padding:14px 15px; box-shadow:var(--shadow);
+  }
+  .kpi .k-l{font-size:11.5px; font-weight:600; color:var(--ink-faint); letter-spacing:.02em}
+  .kpi .k-v{font-size:clamp(20px,2.4vw,25px); font-weight:700; margin-top:5px; letter-spacing:-.01em}
+  .kpi .k-s{font-size:11.5px; color:var(--ink-soft); margin-top:2px}
+  .kpi.hero-kpi{grid-column:1/-1; background:linear-gradient(135deg,var(--accent-soft),var(--surface))}
+  .pos{color:var(--pos)} .neg{color:var(--neg)}
+
+  .row{display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:8px 0; border-bottom:1px dashed var(--line); font-size:13.5px}
+  .row:last-child{border-bottom:0}
+  .row .r-l{color:var(--ink-soft)}
+  .row .r-v{font-weight:600; font-variant-numeric:tabular-nums; white-space:nowrap}
+  .row.total{border-top:2px solid var(--line-strong); border-bottom:0; margin-top:4px; padding-top:11px}
+  .row.total .r-l{color:var(--ink); font-weight:700}
+  .row.total .r-v{font-size:15px}
+  .row.sub-in .r-l{padding-inline-start:14px; color:var(--ink-faint); font-size:12.5px}
+  .pill{display:inline-block; font-size:11px; font-weight:700; padding:2px 9px; border-radius:999px}
+  .pill.pos{background:var(--pos-soft); color:var(--pos)}
+  .pill.neg{background:var(--neg-soft); color:var(--neg)}
+
+  .note{font-size:11.5px; color:var(--ink-faint); line-height:1.55; margin-top:10px}
+  .note b{color:var(--ink-soft)}
+  details.disc{margin-top:8px}
+  details.disc summary{cursor:pointer; font-size:12px; font-weight:600; color:var(--ink-soft)}
+  footer{padding:0 clamp(16px,4vw,54px) 44px; max-width:960px}
+
+  .theme-toggle{
+    position:fixed; top:14px; inset-inline-start:14px; z-index:20;
+    background:var(--surface); border:1px solid var(--line-strong); color:var(--ink);
+    width:38px; height:38px; border-radius:10px; cursor:pointer; font-size:16px;
+    box-shadow:var(--shadow);
+  }
+  .exit-toggle{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-soft); cursor:pointer; user-select:none}
+</style>
+
+<div class="app">
+  <button class="theme-toggle" id="themeBtn" title="החלף מצב תצוגה" aria-label="החלף מצב תצוגה">◐</button>
+
+  <header class="hero">
+    <span class="kicker"><span class="tile"></span> השקעת נדל״ן · פורטוגל</span>
+    <h1>מחשבון השקעה בדירה בפורטוגל</h1>
+    <p class="sub">מודל מלא של רכישה במשכנתא — עלויות רכישה פורטוגליות (IMT, בולים, נוטריון), תזרים חודשי, תשואה, והשוואה בין השכרה ארוכת־טווח לקצרת־טווח (Airbnb). כל הנתונים ניתנים לעריכה והתוצאות מתעדכנות בזמן אמת.</p>
+  </header>
+
+  <div class="layout">
+    <!-- ============ INPUTS ============ -->
+    <div class="inputs">
+
+      <section class="card">
+        <div class="card-h"><h2>הנכס והמימון</h2><span class="idx">01</span></div>
+        <div class="card-b">
+          <div class="grid2">
+            <div class="field">
+              <label for="price">מחיר רכישה</label>
+              <div class="in-wrap has-unit"><span class="unit">€</span>
+                <input class="num" type="number" id="price" value="250000" min="0" step="5000"></div>
+            </div>
+            <div class="field">
+              <label for="appraisal">שווי שמאי <span class="hint">(אם שונה — הבנק ממן לפי הנמוך)</span></label>
+              <div class="in-wrap has-unit"><span class="unit">€</span>
+                <input class="num" type="number" id="appraisal" value="250000" min="0" step="5000"></div>
+            </div>
+            <div class="field">
+              <label for="residency">תושבוּת מס <span class="hint">(קובע שיעור IMT)</span></label>
+              <select id="residency">
+                <option value="nonresident">תושב חוץ · IMT 7.5% אחיד</option>
+                <option value="resident">תושב פורטוגל · מדרגות</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="use">ייעוד הנכס <span class="hint">(רלוונטי לתושב פורטוגל)</span></label>
+              <select id="use">
+                <option value="secondary">השקעה / דירה שנייה</option>
+                <option value="permanent">מגורי קבע</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="age">גיל הקונה <span class="hint">(קובע תקופת משכנתא, IMT Jovem וביטוח חיים)</span></label>
+              <input class="num" type="number" id="age" value="45" min="18" max="90" step="1">
+            </div>
+            <div class="field">
+              <label for="ltv">אחוז מימון (LTV) <span class="hint">(תושב חוץ: בד״כ עד 70%)</span></label>
+              <div class="in-wrap has-unit"><span class="unit">%</span>
+                <input class="num" type="number" id="ltv" value="70" min="0" max="90" step="5"></div>
+            </div>
+            <div class="field">
+              <label for="rateType">סוג ריבית</label>
+              <select id="rateType">
+                <option value="var">משתנה (Euribor + מרווח)</option>
+                <option value="mix">מעורבת</option>
+                <option value="fix">קבועה</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="euribor">Euribor 12ח׳ <span class="hint">(בסיס; ~2.7% ביולי 2026)</span></label>
+              <div class="in-wrap has-unit"><span class="unit">%</span>
+                <input class="num" type="number" id="euribor" value="2.7" min="0" max="8" step="0.05"></div>
+            </div>
+            <div class="field" style="grid-column:1/-1">
+              <label for="rate">ריבית שנתית <span class="hint">(אומדן — ניתן לדרוס לפי הצעת בנק)</span></label>
+              <div class="in-wrap has-unit"><span class="unit">%</span>
+                <input class="num" type="number" id="rate" value="3.40" min="0" max="15" step="0.05"></div>
+              <span class="hint" id="rateHint" style="color:var(--accent-ink);font-weight:600"></span>
+            </div>
+            <label class="check" id="campaignWrap" style="grid-column:1/-1;margin-top:0">
+              <input type="checkbox" id="campaign">
+              <span>ריבית <b>קמפיין/מבצע</b> — ריבית נמוכה לתקופה ראשונה (למשל שנתיים ב-2.2%), ואז הריבית שלמעלה.</span>
+            </label>
+            <div class="field campaign-f hidden">
+              <label for="introRate">ריבית מבצע</label>
+              <div class="in-wrap has-unit"><span class="unit">%</span>
+                <input class="num" type="number" id="introRate" value="2.2" min="0" max="10" step="0.05"></div>
+            </div>
+            <div class="field campaign-f hidden">
+              <label for="introYears">שנות מבצע</label>
+              <div class="in-wrap has-unit"><span class="unit" style="inset-inline-start:auto;inset-inline-end:11px">שנים</span>
+                <input class="num" type="number" id="introYears" value="2" min="1" max="10" step="1" style="padding-inline-end:52px;padding-inline-start:11px"></div>
+            </div>
+            <div class="field">
+              <label for="term">תקופת המשכנתא</label>
+              <div class="in-wrap has-unit"><span class="unit" style="inset-inline-start:auto;inset-inline-end:11px">שנים</span>
+                <input class="num" type="number" id="term" value="30" min="1" max="40" step="1" style="padding-inline-end:52px;padding-inline-start:11px"></div>
+              <span class="hint" id="termMax" style="color:var(--accent-ink);font-weight:600"></span>
+            </div>
+            <div class="field">
+              <label for="hold">אופק החזקה עד מכירה</label>
+              <div class="in-wrap has-unit"><span class="unit" style="inset-inline-start:auto;inset-inline-end:11px">שנים</span>
+                <input class="num" type="number" id="hold" value="7" min="1" max="40" step="1" style="padding-inline-end:52px;padding-inline-start:11px"></div>
+            </div>
+            <div class="field">
+              <label for="appr">עליית ערך שנתית צפויה</label>
+              <div class="in-wrap has-unit"><span class="unit">%</span>
+                <input class="num" type="number" id="appr" value="4" min="-5" max="20" step="0.5"></div>
+            </div>
+          </div>
+          <label class="check" id="refundWrap">
+            <input type="checkbox" id="refund">
+            <span>מיישם <b>מסלול החזר IMT</b> — השכרה ארוכת־טווח ל־36 חודשים (שכ״ד עד €2,300) או תושבוּת מס תוך שנתיים ⟵ חזרה למדרגות הפרוגרסיביות במקום 7.5%.</span>
+          </label>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-h"><h2>עלויות רכישה חד־פעמיות</h2><span class="idx">02</span></div>
+        <div class="card-b">
+          <div class="grid2">
+            <div class="field">
+              <label for="notary">נוטריון + רישום</label>
+              <div class="in-wrap has-unit"><span class="unit">€</span>
+                <input class="num" type="number" id="notary" value="1200" min="0" step="100"></div>
+            </div>
+            <div class="field">
+              <label for="bankfee">עמלות בנק ושמאות</label>
+              <div class="in-wrap has-unit"><span class="unit">€</span>
+                <input class="num" type="number" id="bankfee" value="1000" min="0" step="100"></div>
+            </div>
+            <div class="field">
+              <label for="legal">עו״ד / ליווי משפטי</label>
+              <div class="in-wrap has-unit"><span class="unit">€</span>
+                <input class="num" type="number" id="legal" value="2000" min="0" step="250"></div>
+            </div>
+            <div class="field">
+              <label for="broker">תיווך <span class="hint">(בד״כ 0 לקונה)</span></label>
+              <div class="in-wrap has-unit"><span class="unit">€</span>
+                <input class="num" type="number" id="broker" value="0" min="0" step="500"></div>
+            </div>
+          </div>
+          <p class="note">מס רכישה (IMT) ובולים מחושבים אוטומטית לפי מדרגות המס בפורטוגל לשנת 2026. מוצגים בפאנל התוצאות.</p>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-h"><h2>מודל ההשכרה</h2><span class="idx">03</span></div>
+        <div class="card-b">
+          <div class="seg" role="group" aria-label="בחירת מודל השכרה" style="margin-bottom:16px">
+            <button id="tabLong" aria-pressed="true">ארוכת־טווח</button>
+            <button id="tabShort" aria-pressed="false">קצרת־טווח (Airbnb)</button>
+          </div>
+
+          <!-- long term -->
+          <div id="paneLong" class="grid2">
+            <div class="field">
+              <label for="rentM">שכר דירה חודשי</label>
+              <div class="in-wrap has-unit"><span class="unit">€</span>
+                <input class="num" type="number" id="rentM" value="1100" min="0" step="50"></div>
+            </div>
+            <div class="field">
+              <label for="vacancy">אחוז אי־תפוסה</label>
+              <div class="in-wrap has-unit"><span class="unit">%</span>
+                <input class="num" type="number" id="vacancy" value="4" min="0" max="50" step="1"></div>
+            </div>
+            <div class="field">
+              <label for="mgmtLong">דמי ניהול <span class="hint">(% מהשכ״ד; +מע״מ אם חל)</span></label>
+              <div class="in-wrap has-unit"><span class="unit">%</span>
+                <input class="num" type="number" id="mgmtLong" value="20" min="0" max="40" step="1"></div>
+            </div>
+            <div class="field" style="grid-column:1/-1">
+              <label for="leaseRate">משך חוזה השכירות <span class="hint">(שכר ≤ €2,300/ח׳ ⟵ 10%; אחרת לפי משך)</span></label>
+              <select id="leaseRate">
+                <option value="25">חוזה עד 5 שנים</option>
+                <option value="15">חוזה 5–10 שנים</option>
+                <option value="10">חוזה 10–20 שנים</option>
+                <option value="5">חוזה מעל 20 שנים</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- short term -->
+          <div id="paneShort" class="grid2 hidden">
+            <div class="field">
+              <label for="nightly">מחיר ללילה</label>
+              <div class="in-wrap has-unit"><span class="unit">€</span>
+                <input class="num" type="number" id="nightly" value="95" min="0" step="5"></div>
+            </div>
+            <div class="field">
+              <label for="occ">אחוז תפוסה שנתי</label>
+              <div class="in-wrap has-unit"><span class="unit">%</span>
+                <input class="num" type="number" id="occ" value="65" min="0" max="100" step="1"></div>
+            </div>
+            <div class="field">
+              <label for="platform">עמלת פלטפורמה <span class="hint">(Airbnb/Booking)</span></label>
+              <div class="in-wrap has-unit"><span class="unit">%</span>
+                <input class="num" type="number" id="platform" value="15" min="0" max="30" step="0.5"></div>
+            </div>
+            <div class="field">
+              <label for="mgmt">דמי ניהול</label>
+              <div class="in-wrap has-unit"><span class="unit">%</span>
+                <input class="num" type="number" id="mgmt" value="20" min="0" max="40" step="1"></div>
+            </div>
+            <div class="field">
+              <label for="vat">מע״מ על דמי הניהול</label>
+              <div class="in-wrap has-unit"><span class="unit">%</span>
+                <input class="num" type="number" id="vat" value="23" min="0" max="30" step="1"></div>
+            </div>
+            <div class="field">
+              <label for="stUtil">חשמל/מים/אינטרנט לשנה</label>
+              <div class="in-wrap has-unit"><span class="unit">€</span>
+                <input class="num" type="number" id="stUtil" value="1800" min="0" step="100"></div>
+            </div>
+            <div class="field">
+              <label for="cleaning">ניקיון לשנה <span class="hint">(נטו לבעלים)</span></label>
+              <div class="in-wrap has-unit"><span class="unit">€</span>
+                <input class="num" type="number" id="cleaning" value="600" min="0" step="100"></div>
+            </div>
+            <div class="field">
+              <label for="alZone">אזור AL <span class="hint">(מקדם מס)</span></label>
+              <select id="alZone">
+                <option value="0.35">רגיל · מקדם 35%</option>
+                <option value="0.50">אזור עצור (מרכז ליסבון/פורטו) · 50%</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="stIrs">שיעור IRS תושב חוץ <span class="hint">(קטגוריה B)</span></label>
+              <div class="in-wrap has-unit"><span class="unit">%</span>
+                <input class="num" type="number" id="stIrs" value="25" min="0" max="48" step="1"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-h"><h2>הוצאות שוטפות ומיסוי</h2><span class="idx">04</span></div>
+        <div class="card-b">
+          <div class="grid2">
+            <div class="field">
+              <label for="imi">IMI — ארנונה <span class="hint">(% מהמחיר; בפועל על ה-VPT הנמוך יותר)</span></label>
+              <div class="in-wrap has-unit"><span class="unit">%</span>
+                <input class="num" type="number" id="imi" value="0.3" min="0" max="1" step="0.05"></div>
+            </div>
+            <div class="field">
+              <label for="condo">ועד בית (condomínio) לשנה</label>
+              <div class="in-wrap has-unit"><span class="unit">€</span>
+                <input class="num" type="number" id="condo" value="600" min="0" step="50"></div>
+            </div>
+            <div class="field">
+              <label for="insHome">ביטוח דירה — multirriscos <span class="hint">(€ לשנה)</span></label>
+              <div class="in-wrap has-unit"><span class="unit">€</span>
+                <input class="num" type="number" id="insHome" value="200" min="0" step="25"></div>
+            </div>
+            <div class="field">
+              <label for="insLife">ביטוח חיים <span class="hint">(% מהמשכנתא לשנה)</span></label>
+              <div class="in-wrap has-unit"><span class="unit">%</span>
+                <input class="num" type="number" id="insLife" value="0.35" min="0" max="2" step="0.05"></div>
+            </div>
+            <div class="field">
+              <label for="acc">הנה״ח + ייצוג פיסקלי <span class="hint">(נציג מס חובה לתושב חוץ)</span></label>
+              <div class="in-wrap has-unit"><span class="unit">€</span>
+                <input class="num" type="number" id="acc" value="700" min="0" step="100"></div>
+            </div>
+            <div class="field">
+              <label for="maint">תחזוקה ובלאי <span class="hint">(% מההכנסה)</span></label>
+              <div class="in-wrap has-unit"><span class="unit">%</span>
+                <input class="num" type="number" id="maint" value="5" min="0" max="30" step="1"></div>
+            </div>
+          </div>
+          <p class="note"><b>שני הביטוחים הם חובה למשכנתא בפורטוגל.</b> ביטוח דירה (multirriscos) הוא סכום קבוע — ~€150–300 לשנה לדירת השקעה. ביטוח חיים תלוי בגיל, בריאות וגובה ההלוואה, לכן מחושב כאחוז מהמשכנתא (~0.2%–0.5% לשנה ללווה יחיד). ניתן לרכוש אותם מחוץ לבנק המלווה ולחסוך עד 60%.<br><br><b>IMI</b> מחושב על ה-VPT (השווי הרשמי, בד״כ נמוך משווי השוק), לכן חישוב על המחיר שמרני. <b>ייצוג פיסקלי:</b> תושב חוץ מחוץ לאיחוד האירופי חייב במינוי נציג מס בפורטוגל (~€150–250/שנה) — כלול בשדה הנה״ח.<br><br><b>מיסוי שכירות לתושב חוץ (מאומת):</b> בהשכרה <b>ארוכת־טווח</b> (קטגוריה F) המס חל על ההכנסה נטו (ניכוי IMI/ועד/ביטוח/ניהול/תחזוקה — לא ריבית). מ־1.1.2026 (OE 2026): שכר דירה עד <b>€2,300/ח׳</b> בחוזה רשום ל־3 שנים+ ⟵ <b>10% שטוח</b>. מעל €2,300 — שיעור יורד לפי משך החוזה: 25% (עד 5ש') / 15% / 10% / 5% (20ש'+). בהשכרה <b>קצרת־טווח</b> (קטגוריה B / AL) בסיס המס הוא 35% מהברוטו (או 50% באזור עצור), כפול 25% ⟵ 8.75% (או 12.5%) אפקטיבי. שיעורי המס נקבעים בבוררים במודל ההשכרה.</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- ============ RESULTS ============ -->
+    <div class="results">
+      <div class="kpis">
+        <div class="kpi hero-kpi">
+          <div class="k-l">הון עצמי נדרש בכניסה</div>
+          <div class="k-v num" id="oCash">—</div>
+          <div class="k-s" id="oCashSub">מקדמה + כל עלויות הרכישה</div>
+        </div>
+        <div class="kpi">
+          <div class="k-l">תזרים חודשי נטו</div>
+          <div class="k-v num" id="oCF">—</div>
+          <div class="k-s" id="oCFSub">אחרי משכנתא ומס</div>
+        </div>
+        <div class="kpi">
+          <div class="k-l">תשואה על ההון (Cash-on-Cash)</div>
+          <div class="k-v num" id="oCoC">—</div>
+          <div class="k-s">שנתי, אחרי מס</div>
+        </div>
+      </div>
+
+      <section class="card">
+        <div class="card-h"><h2>מבנה המימון</h2></div>
+        <div class="card-b" id="finBox"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-h"><h2>עלויות רכישה</h2><span class="idx" id="acqPct"></span></div>
+        <div class="card-b" id="acqBox"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-h"><h2>דוח רווח שנתי</h2><span class="idx" id="modelTag"></span></div>
+        <div class="card-b" id="opBox"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-h"><h2>מודל יציאה — קנייה ומכירה</h2><span class="idx" id="exitYears"></span></div>
+        <div class="card-b" id="exitBox"></div>
+      </section>
+    </div>
+  </div>
+
+  <footer>
+    <details class="disc">
+      <summary>הנחות, שיטת חישוב והבהרה</summary>
+      <p class="note">
+        <b>מס רכישה (IMT):</b> מחושב לפי מדרגות פורטוגל לשנת 2026 (המדרגות עודכנו ב־2% מ־2025). מדרגות למגורי קבע: פטור עד €106,346; 2% / 5% / 7% / 8% במדרגות; 6% ו־7.5% אחידים בקצה. מדרגות להשקעה: 1% מהאירו הראשון ואז זהה. שיטת החישוב מדורגת (marginal).<br>
+        <b>בולים (Imposto de Selo, לפי TGIS):</b> 0.8% על מחיר הרכישה (verba 1.1); על המשכנתא — 0.6% ל־5 שנים ומעלה / 0.5% מתחת ל־5 שנים (verba 17.1); ועוד 4% על עמלות הבנק (verba 17.3.4). <b>הבול על המשכנתא הוא 0.6% ולא 0.8%</b> — ה־0.8% הוא בול הרכישה בלבד.<br>
+        <b>ביטוחים (חובה למשכנתא):</b> ביטוח דירה multirriscos ~€150–300/שנה קבוע; ביטוח חיים ~0.2%–0.5% מיתרת ההלוואה לשנה (תלוי גיל ובריאות). ניתן לרכוש מחוץ לבנק.<br>
+        <b>מיסוי שכירות:</b> ברירת מחדל 25% (תושב חוץ, קטגוריה F לטווח ארוך). בקצר־טווח (Alojamento Local) בסיס המס 35% מהברוטו.<br>
+        <b>תקופת משכנתא לפי גיל:</b> בנק פורטוגל מגביל את התקופה — עד 40 שנה מתחת לגיל 30, 37 שנה בגילי 30–35, ו-35 שנה מעל 35; ובכל מקרה ההלוואה חייבת להסתיים עד גיל 75 (חלק מהבנקים 80). תושבי חוץ בד״כ מוגבלים ל-30 שנה ו-LTV עד 70%. המחשבון מגביל את התקופה אוטומטית לפי הגיל.<br>
+        <b>אומדן ריבית משכנתא (יולי 2026, מכויל לתעריפי שטח):</b> Euribor 12ח׳ (~2.7%) + מרווח לתושב חוץ (בסיס ~0.6%, בר-השגה עם ברוקר). מרווח עולה מעט עם LTV (80%+ ‎+0.1%‎) ומשך (30ש׳ ‎+0.1%‎), ולפי סוג ריבית (מעורבת ‎+0.3%‎, קבועה ‎+0.7%‎); תושב מקומי ‎−0.3%‎. ברירת מחדל ~3.4% תואמת תעריפי שוק בפועל (משתנה 3.2–3.5%). <b>ריבית קמפיין:</b> תומך במבנה דו-שלבי (ריבית מבצע נמוכה לתקופה ראשונה ואז הרגילה) — נפוץ בפורטוגל. יש לדרוס לפי הצעת בנק אמיתית.<br>
+        <b>מודל יציאה:</b> ערך מכירה = מחיר × (1+עליית ערך)^שנים; בניכוי יתרת המשכנתא, עמלת מכירה, קנס פירעון מוקדם ומס רווח הון משוער; בתוספת תזרים מצטבר.<br>
+        <b>מס תושב חוץ (Decreto-Lei 97/2026, מ־1.9.2026):</b> תושבי חוץ משלמים IMT אחיד של 7.5% על נדל״ן למגורים (ברירת המחדל במחשבון). ניתן לקבל <b>החזר למדרגות הפרוגרסיביות</b> אם הופכים לתושב מס תוך שנתיים, או משכירים בשכירות ארוכת־טווח (עד €2,300/ח׳) ל־36 חודשים לפחות ב־5 השנים הראשונות. חל על מגורים בלבד — לא על מסחרי/קרקע.<br><br>
+        <i>זהו כלי הדמיה בלבד. הנתונים אינם ייעוץ מס/משפטי/פיננסי ואינם מהווים התחייבות. תנאי מימון בפועל תלויים בבנק, בשמאות ובמדיניות עדכנית. אמת מול עו״ד ורו״ח בפורטוגל לפני התקשרות.</i>
+      </p>
+    </details>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $=function(id){return document.getElementById(id);};
+  var eur=new Intl.NumberFormat('he-IL',{style:'currency',currency:'EUR',maximumFractionDigits:0});
+  var eur1=new Intl.NumberFormat('he-IL',{style:'currency',currency:'EUR',maximumFractionDigits:0});
+  var pct=function(x){return (x*100).toFixed(1).replace(/\.0$/,'')+'%';};
+  var v=function(id){var n=parseFloat($(id).value);return isNaN(n)?0:n;};
+
+  var model='long';
+
+  // ---- IMT 2026 brackets (mainland) ----
+  var IMT={
+    permanent:[
+      {upTo:106346,rate:0},{upTo:145470,rate:0.02},{upTo:198347,rate:0.05},
+      {upTo:330539,rate:0.07},{upTo:660982,rate:0.08},
+      {upTo:1150853,rate:0.06,flat:true},{upTo:Infinity,rate:0.075,flat:true}
+    ],
+    secondary:[
+      {upTo:106346,rate:0.01},{upTo:145470,rate:0.02},{upTo:198347,rate:0.05},
+      {upTo:330539,rate:0.07},{upTo:633931,rate:0.08},
+      {upTo:1150853,rate:0.06,flat:true},{upTo:Infinity,rate:0.075,flat:true}
+    ],
+    jovem:[   // IMT Jovem — רכישה ראשונה של מגורי קבע עד גיל 35
+      {upTo:330539,rate:0},{upTo:660982,rate:0.08},
+      {upTo:1150853,rate:0.06,flat:true},{upTo:Infinity,rate:0.075,flat:true}
+    ]
+  };
+  // returns {tax, eff, parts:[{from,to,rate,base,tax}]}
+  function imt(value,use,young){
+    var b = young ? IMT.jovem : IMT[use];
+    var prev=0, tax=0, parts=[];
+    for(var i=0;i<b.length;i++){
+      if(value<=b[i].upTo){
+        if(b[i].flat){
+          return {tax:value*b[i].rate, eff:b[i].rate,
+            parts:[{from:0,to:value,rate:b[i].rate,base:value,tax:value*b[i].rate}]};
+        }
+        var base=value-prev;
+        if(base>0){ parts.push({from:prev,to:value,rate:b[i].rate,base:base,tax:base*b[i].rate}); tax+=base*b[i].rate; }
+        return {tax:tax, eff:value>0?tax/value:0, parts:parts};
+      }
+      if(!b[i].flat){
+        var bb=b[i].upTo-prev;
+        if(bb>0){ parts.push({from:prev,to:b[i].upTo,rate:b[i].rate,base:bb,tax:bb*b[i].rate}); tax+=bb*b[i].rate; }
+      }
+      prev=b[i].upTo;
+    }
+    return {tax:tax, eff:value>0?tax/value:0, parts:parts};
+  }
+
+  // amortization with one or more rate phases (for campaign/teaser rates)
+  // phases: [{months, rate(decimal)}]; returns per-phase payments + cumulative arrays by month
+  function amort(loan,n,phases){
+    var bal=loan, m=0, payments=[], balAfter=[loan], cumPaid=[0], cumInt=[0], paid=0, intr=0;
+    for(var p=0;p<phases.length && m<n;p++){
+      if(phases[p].months<=0) continue;
+      var remaining=n-m, r=phases[p].rate/12;
+      var pay = r>0 ? bal*r/(1-Math.pow(1+r,-remaining)) : bal/remaining;
+      payments.push(pay);
+      for(var k=0;k<phases[p].months && m<n;k++){
+        var interest=bal*r, principal=pay-interest;
+        bal=Math.max(0,bal-principal);
+        m++; paid+=pay; intr+=interest;
+        balAfter[m]=bal; cumPaid[m]=paid; cumInt[m]=intr;
+      }
+    }
+    return {payments:payments, balAfter:balAfter, cumPaid:cumPaid, cumInt:cumInt};
+  }
+
+  function rows(box,arr){
+    box.innerHTML=arr.map(function(r){
+      if(r.gap) return '<div style="height:6px"></div>';
+      var cls='row'+(r.total?' total':'')+(r.sub?' sub-in':'');
+      var vcls='r-v'+(r.pos?' pos':'')+(r.neg?' neg':'');
+      return '<div class="'+cls+'"><span class="r-l">'+r.l+'</span><span class="'+vcls+'">'+r.v+'</span></div>';
+    }).join('');
+  }
+
+  function calc(){
+    var price=v('price'), use=$('use').value, ltv=v('ltv')/100;
+    var appraisal=v('appraisal'), age=v('age');
+    var residency=$('residency').value;
+    var hold=v('hold'), appr=v('appr')/100;
+
+    // max mortgage term the bank will grant — driven by age
+    // (Banco de Portugal age limits + loan must end by age 75; non-residents further capped ~30y)
+    var MAX_END_AGE=75;
+    var bdpMax = age<=30?40 : (age<=35?37:35);
+    var termCap = Math.max(1, Math.min(bdpMax, MAX_END_AGE-age));
+    if(residency==='nonresident') termCap=Math.min(termCap,30);
+    var term=v('term');
+    if(term>termCap){ term=termCap; $('term').value=termCap; }
+    $('term').max=termCap;
+    var endsAt=age+term;
+    $('termMax').textContent = (MAX_END_AGE-age<=0)
+      ? '⚠ בגיל '+age+' קשה מאוד לקבל משכנתא (סיום עד גיל '+MAX_END_AGE+')'
+      : 'מקסימום לפי גיל '+age+': '+termCap+' שנים · ההלוואה תסתיים בגיל '+endsAt;
+
+    // estimate mortgage rate: Euribor + non-resident spread, varies by LTV / term / rate type
+    var eu=v('euribor');
+    var spread=0.6;                                   // non-resident base spread (broker-achievable, 2026)
+    if(ltv<=0.60) spread-=0.10;                       // LTV tiers — mild, matches current market
+    else if(ltv>0.80) spread+=0.10;
+    if(term<=15) spread-=0.05;                         // term / duration
+    else if(term>25) spread+=0.10;
+    if(residency==='resident') spread-=0.30;          // residents get lower spreads
+    var rtype=$('rateType').value;
+    var typeAdd = rtype==='fix'?0.70 : (rtype==='mix'?0.30:0);
+    var totSpread=spread+typeAdd;
+    var estRate=eu+totSpread;
+    if(!rateTouched){ $('rate').value=estRate.toFixed(2); }
+    var rate=v('rate')/100;
+    var rtypeName={var:'משתנה',mix:'מעורבת',fix:'קבועה'}[rtype];
+    var campaign=$('campaign').checked;
+    document.querySelectorAll('.campaign-f').forEach(function(el){el.classList.toggle('hidden',!campaign);});
+    $('rateHint').textContent = rateTouched
+      ? (campaign?'ריבית לאחר המבצע (ידנית) · ':'ריבית שהוזנה ידנית · ')+'אומדן שוק: '+estRate.toFixed(2)+'%'
+      : (campaign?'לאחר המבצע: ':'')+'Euribor '+eu.toFixed(2)+'% + מרווח '+totSpread.toFixed(2)+'% · LTV '+Math.round(ltv*100)+'%, '+term+'ש׳, '+rtypeName;
+
+    // financing — the bank lends on the lower of price / appraisal
+    var financeBase=(appraisal>0)?Math.min(price,appraisal):price;
+    var loan=financeBase*ltv;
+    var down=price-loan;
+
+    // acquisition — IMT depends on tax residency (non-resident = flat 7.5% from Sep 2026)
+    var refund=$('refund').checked;
+    $('refundWrap').classList.toggle('hidden',residency!=='nonresident');
+    var young=(use==='permanent' && age>0 && age<=35 && residency==='resident');
+    var imtR;
+    if(residency==='nonresident' && !refund){
+      var t75=price*0.075;
+      imtR={tax:t75, eff:0.075, flat75:true,
+        parts:[{from:0,to:price,rate:0.075,base:price,tax:t75}]};
+    } else {
+      imtR=imt(price,use,young);
+      imtR.refund=(residency==='nonresident');
+    }
+    var tImt=imtR.tax;
+    var stampBuy=price*0.008;
+    var stampLoan=loan*(term>=5?0.006:0.005);
+    var notary=v('notary'), bankfee=v('bankfee'), legal=v('legal'), broker=v('broker');
+    var stampComm=bankfee*0.04;   // 4% stamp on bank commissions (TGIS verba 17.3.4)
+    var acqTotal=tImt+stampBuy+stampLoan+stampComm+notary+bankfee+legal+broker;
+    var cashNeeded=down+acqTotal;
+
+    // mortgage — phased amortization (campaign teaser rate then standard)
+    var n=term*12;
+    var introM = campaign ? Math.min(Math.round(v('introYears')*12), n) : 0;
+    var phases = campaign
+      ? [{months:introM, rate:v('introRate')/100}, {months:n-introM, rate:rate}]
+      : [{months:n, rate:rate}];
+    var am=amort(loan,n,phases);
+    var mPayIntro=am.payments[0];
+    var mPay=am.payments[am.payments.length-1];   // steady-state (post-campaign) payment
+    var annualMortgage=mPay*12;
+    var campaignSaving = campaign ? (mPay-mPayIntro)*introM : 0;
+
+    // ---- income model ----
+    var imiCost=price*(v('imi')/100);
+    var insHome=v('insHome'), insLife=loan*(v('insLife')/100);
+    var ins=insHome+insLife;
+    var condo=v('condo'), acc=v('acc'), maintP=v('maint')/100;
+    var gross, opex, taxableBase, tax, opBreak=[], modelName;
+
+    if(model==='long'){
+      modelName='ארוך';
+      var occ=1-v('vacancy')/100;
+      gross=v('rentM')*12*occ;
+      var maint=gross*maintP;
+      var mgmtLT=gross*(v('mgmtLong')/100);        // management fee (as quoted; add VAT via the % if applicable)
+      opex=imiCost+condo+ins+acc+maint+mgmtLT;
+      var noiPre=gross-opex;
+      // Category F rate: moderate-rent contracts (≤ €2,300/mo, 3+ yr) pay 10% (OE 2026); else duration-based
+      var durRate=v('leaseRate');
+      var moderate=(v('rentM')<=2300);
+      var leaseRatePct = moderate ? Math.min(10,durRate) : durRate;
+      var leaseRate=leaseRatePct/100;
+      taxableBase=Math.max(0,noiPre);
+      tax=taxableBase*leaseRate;
+      opBreak=[
+        {l:'הכנסה ברוטו (בניכוי אי־תפוסה)',v:eur.format(gross)},
+        {l:'IMI (ארנונה)',v:'−'+eur.format(imiCost),sub:true},
+        {l:'ועד בית',v:'−'+eur.format(condo),sub:true},
+        {l:'ביטוח דירה + חיים',v:'−'+eur.format(ins),sub:true},
+        {l:'הנה״ח + ייצוג פיסקלי',v:'−'+eur.format(acc),sub:true},
+        {l:'דמי ניהול',v:'−'+eur.format(mgmtLT),sub:true},
+        {l:'תחזוקה ובלאי',v:'−'+eur.format(maint),sub:true},
+        {l:'רווח תפעולי (לפני מס)',v:eur.format(noiPre),total:true},
+        {l:'מס קטגוריה F ('+pct(leaseRate)+((moderate&&leaseRatePct===10)?' · שכר מתון ≤€2,300':' · לפי משך חוזה')+')',v:'−'+eur.format(tax)}
+      ];
+      var noiNet=noiPre-tax;
+      finish(noiPre,noiNet);
+    } else {
+      modelName='קצר';
+      var occS=v('occ')/100;
+      gross=v('nightly')*365*occS;
+      var platform=gross*(v('platform')/100);
+      var mgmt=gross*(v('mgmt')/100)*(1+v('vat')/100);
+      var util=v('stUtil'), clean=v('cleaning');
+      var maintS=gross*maintP;
+      opex=imiCost+condo+ins+acc+platform+mgmt+util+clean+maintS;
+      var noiPreS=gross-opex;
+      var coeff=parseFloat($('alZone').value);   // AL coefficient (0.35 / 0.50 containment)
+      var irs=v('stIrs')/100;                     // non-resident category B rate
+      taxableBase=gross*coeff;
+      tax=taxableBase*irs;
+      opBreak=[
+        {l:'הכנסה ברוטו ('+Math.round(365*occS)+' לילות)',v:eur.format(gross)},
+        {l:'עמלת פלטפורמה',v:'−'+eur.format(platform),sub:true},
+        {l:'דמי ניהול + מע״מ',v:'−'+eur.format(mgmt),sub:true},
+        {l:'חשמל/מים/אינטרנט',v:'−'+eur.format(util),sub:true},
+        {l:'ניקיון',v:'−'+eur.format(clean),sub:true},
+        {l:'IMI',v:'−'+eur.format(imiCost),sub:true},
+        {l:'ועד בית',v:'−'+eur.format(condo),sub:true},
+        {l:'ביטוח דירה + חיים',v:'−'+eur.format(ins),sub:true},
+        {l:'הנה״ח + ייצוג פיסקלי',v:'−'+eur.format(acc),sub:true},
+        {l:'תחזוקה ובלאי',v:'−'+eur.format(maintS),sub:true},
+        {l:'רווח תפעולי (לפני מס)',v:eur.format(noiPreS),total:true},
+        {l:'מס AL ('+pct(coeff)+'×'+pct(irs)+' = '+pct(coeff*irs)+' אפקטיבי)',v:'−'+eur.format(tax)}
+      ];
+      var noiNetS=noiPreS-tax;
+      finish(noiPreS,noiNetS);
+    }
+
+    function finish(noiPre,noiNet){
+      // cashflow after mortgage
+      var cfYear=noiNet-annualMortgage;
+      var cfMonth=cfYear/12;
+      var coc=cashNeeded>0?cfYear/cashNeeded:0;
+      var grossYield=price>0?gross/price:0;
+      var netYield=price>0?noiPre/price:0;
+
+      // KPIs
+      $('oCash').textContent=eur.format(cashNeeded);
+      $('oCashSub').textContent='מקדמה '+eur.format(down)+' + עלויות '+eur.format(acqTotal);
+      var cfEl=$('oCF'); cfEl.textContent=(cfMonth>=0?'+':'')+eur.format(cfMonth);
+      cfEl.className='k-v num '+(cfMonth>=0?'pos':'neg');
+      $('oCFSub').textContent='כ־'+eur.format(cfYear)+' לשנה';
+      var cocEl=$('oCoC'); cocEl.textContent=(coc>=0?'+':'')+pct(coc);
+      cocEl.className='k-v num '+(coc>=0?'pos':'neg');
+
+      $('modelTag').textContent=model==='long'?'השכרה ארוכת־טווח':'Airbnb / קצר';
+
+      // financing box
+      var finRows=[{l:'מחיר הנכס',v:eur.format(price)}];
+      if(appraisal>0 && appraisal<price){ finRows.push({l:'שווי שמאי (בסיס מימון)',v:eur.format(financeBase)}); }
+      finRows.push({l:'אחוז מימון',v:pct(ltv)});
+      finRows.push({l:'תקופת המשכנתא',v:term+' שנים · סיום בגיל '+endsAt});
+      finRows.push({l:'סכום המשכנתא',v:eur.format(loan)});
+      finRows.push({l:'מקדמה (הון עצמי)',v:eur.format(down)});
+      if(campaign){
+        finRows.push({l:'החזר חודשי — מבצע ('+v('introYears')+' ש׳, '+v('introRate')+'%)',v:eur.format(mPayIntro),total:true});
+        finRows.push({l:'החזר חודשי — לאחר המבצע',v:eur.format(mPay)});
+        finRows.push({l:'חיסכון מצטבר מהמבצע',v:'+'+eur.format(campaignSaving),sub:true});
+      } else {
+        finRows.push({l:'החזר חודשי',v:eur.format(mPay),total:true});
+      }
+      finRows.push({l:'החזר שנתי (יציב)',v:eur.format(annualMortgage)});
+      rows($('finBox'),finRows);
+
+      // acquisition box — detailed IMT + stamp duty
+      var er=function(n){return Math.round(n).toLocaleString('he-IL');};
+      var imtLabel='מס רכישה IMT';
+      if(imtR.flat75) imtLabel+=' · תושב חוץ 7.5%';
+      else if(young) imtLabel+=' · IMT Jovem';
+      else if(imtR.refund) imtLabel+=' · מדרגות (מסלול החזר)';
+      var acqRows=[{l:imtLabel,v:eur.format(tImt)}];
+      imtR.parts.forEach(function(p){
+        acqRows.push({
+          l:pct(p.rate)+' · €'+er(p.from)+'–€'+er(p.to),
+          v:(p.rate===0?'€0 (פטור)':eur.format(p.tax)), sub:true});
+      });
+      if(imtR.flat75){ acqRows.push({l:'* ניתן להפחית למדרגות במסלול החזר (סמן בטופס)',v:'',sub:true}); }
+      if(imtR.refund){ acqRows.push({l:'* משולם 7.5% ומוחזר בכפוף להשכרה 36 ח׳ / תושבוּת',v:'',sub:true}); }
+      if(young){ acqRows.push({l:'* בכפוף לרכישה ראשונה ותושבוּת מס בפורטוגל',v:'',sub:true}); }
+      acqRows.push({l:'שיעור מס רכישה אפקטיבי',v:pct(imtR.eff),sub:true});
+      acqRows.push({l:'בול רכישה · 0.8% × '+eur.format(price),v:eur.format(stampBuy)});
+      acqRows.push({l:'בול משכנתא · '+(term>=5?'0.6%':'0.5%')+' × '+eur.format(loan),v:eur.format(stampLoan)});
+      acqRows.push({l:'נוטריון + רישום',v:eur.format(notary)});
+      acqRows.push({l:'עמלות בנק',v:eur.format(bankfee)});
+      acqRows.push({l:'בול על עמלות בנק · 4%',v:eur.format(stampComm),sub:true});
+      acqRows.push({l:'עו״ד',v:eur.format(legal)});
+      if(broker>0) acqRows.push({l:'תיווך',v:eur.format(broker)});
+      acqRows.push({l:'סה״כ עלויות רכישה',v:eur.format(acqTotal),total:true});
+      $('acqPct').textContent=price>0?pct(acqTotal/price)+' מהמחיר':'';
+      rows($('acqBox'),acqRows);
+
+      // op box
+      opBreak.push({l:'רווח נקי אחרי מס',v:eur.format(noiNet),total:true,pos:noiNet>=0,neg:noiNet<0});
+      opBreak.push({l:'החזר משכנתא שנתי',v:'−'+eur.format(annualMortgage)});
+      opBreak.push({l:'תזרים שנתי נטו',v:(cfYear>=0?'+':'')+eur.format(cfYear),total:true,pos:cfYear>=0,neg:cfYear<0});
+      opBreak.push({l:'תשואה ברוטו',v:pct(grossYield)});
+      opBreak.push({l:'תשואה נטו (על שווי הנכס)',v:pct(netYield)});
+      rows($('opBox'),opBreak);
+
+      // ---- exit model ----
+      var salePrice=price*Math.pow(1+appr,hold);
+      var holdMonths=Math.min(hold*12,n);
+      var balance=am.balAfter[holdMonths];
+      var mortgagePaidHold=am.cumPaid[holdMonths];
+      var sellCost=salePrice*0.05*1.23;                 // agent 5% + VAT
+      var earlyPenalty=balance*(rtype==='var'?0.005:0.02); // variable 0.5% / fixed 2% (legal caps)
+      var acqValueCGT=price+tImt+stampBuy+notary+legal+broker;  // deductible acquisition value
+      var taxableGain=Math.max(0,salePrice-sellCost-acqValueCGT);
+      var cgTax=taxableGain*0.5*0.28;                    // 50% inclusion × ~28% (non-resident estimate)
+      var equityAtSale=salePrice-sellCost-balance-earlyPenalty-cgTax;
+      var cumCF=noiNet*hold - mortgagePaidHold;          // phase-aware (campaign lowers early payments)
+      var totalProfit=equityAtSale+cumCF-cashNeeded;
+      var totalRoi=cashNeeded>0?totalProfit/cashNeeded:0;
+      var annRoi=hold>0?Math.pow(1+totalRoi,1/hold)-1:0;
+
+      $('exitYears').textContent='אחרי '+hold+' שנים';
+      rows($('exitBox'),[
+        {l:'שווי מכירה ('+pct(appr)+' לשנה)',v:eur.format(salePrice)},
+        {l:'עמלת מכירה (5%+מע״מ)',v:'−'+eur.format(sellCost),sub:true},
+        {l:'יתרת משכנתא לסילוק',v:'−'+eur.format(balance),sub:true},
+        {l:'קנס פירעון מוקדם',v:'−'+eur.format(earlyPenalty),sub:true},
+        {l:'מס רווח הון משוער',v:'−'+eur.format(cgTax),sub:true},
+        {l:'הון עצמי שמשתחרר במכירה',v:eur.format(equityAtSale),total:true},
+        {l:'תזרים מצטבר ('+hold+' שנים)',v:(cumCF>=0?'+':'')+eur.format(cumCF)},
+        {l:'בניכוי הון עצמי שהושקע',v:'−'+eur.format(cashNeeded)},
+        {l:'רווח כולל נטו',v:(totalProfit>=0?'+':'')+eur.format(totalProfit),total:true,pos:totalProfit>=0,neg:totalProfit<0},
+        {l:'תשואה כוללת על ההון',v:(totalRoi>=0?'+':'')+pct(totalRoi),pos:totalRoi>=0,neg:totalRoi<0},
+        {l:'תשואה שנתית ממוצעת',v:(annRoi>=0?'+':'')+pct(annRoi),pos:annRoi>=0,neg:annRoi<0}
+      ]);
+    }
+  }
+
+  // tabs
+  function setModel(m){
+    model=m;
+    var isLong=m==='long';
+    $('tabLong').setAttribute('aria-pressed',isLong);
+    $('tabShort').setAttribute('aria-pressed',!isLong);
+    $('paneLong').classList.toggle('hidden',!isLong);
+    $('paneShort').classList.toggle('hidden',isLong);
+    calc();
+  }
+  $('tabLong').addEventListener('click',function(){setModel('long');});
+  $('tabShort').addEventListener('click',function(){setModel('short');});
+
+  // mortgage rate is auto-estimated unless the user overrides it manually
+  var rateTouched=false;
+  $('rate').addEventListener('input',function(){rateTouched=true;});
+
+  // age -> suggested life-insurance rate (unless user edited it manually)
+  var lifeTouched=false;
+  $('insLife').addEventListener('input',function(){lifeTouched=true;});
+  function syncLife(){
+    if(lifeTouched) return;
+    var age=v('age');
+    var r=Math.max(0.15,Math.min(1.2,0.20+Math.max(0,age-30)*0.02));
+    $('insLife').value=r.toFixed(2);
+  }
+  $('age').addEventListener('input',function(){ syncLife(); calc(); });
+
+  // recalc on any input
+  document.querySelectorAll('.app input, .app select').forEach(function(el){
+    el.addEventListener('input',calc);
+  });
+
+  // theme toggle
+  $('themeBtn').addEventListener('click',function(){
+    var root=document.documentElement;
+    var cur=root.getAttribute('data-theme');
+    if(!cur){ cur=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'; }
+    root.setAttribute('data-theme',cur==='dark'?'light':'dark');
+  });
+
+  syncLife();
+  calc();
+})();
+</script>
+
+</body>
+</html>
