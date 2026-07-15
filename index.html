@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="מחשבון השקעה בדירה בפורטוגל — IMT, בולים, מיסוי שכירות, משכנתא ומודל יציאה">
+<meta name="description" content="מחשבון השקעה בדירה בפורטוגל — IMT, בולים, מיסוי שכירות, משכנתא ותזרים">
 <title>מחשבון השקעה בדירה בפורטוגל</title>
 </head>
 <body>
@@ -182,7 +182,6 @@
     width:38px; height:38px; border-radius:10px; cursor:pointer; font-size:16px;
     box-shadow:var(--shadow);
   }
-  .exit-toggle{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-soft); cursor:pointer; user-select:none}
 </style>
 
 <div class="app">
@@ -273,16 +272,6 @@
               <div class="in-wrap has-unit"><span class="unit" style="inset-inline-start:auto;inset-inline-end:11px">שנים</span>
                 <input class="num" type="number" id="term" value="30" min="1" max="40" step="1" style="padding-inline-end:52px;padding-inline-start:11px"></div>
               <span class="hint" id="termMax" style="color:var(--accent-ink);font-weight:600"></span>
-            </div>
-            <div class="field">
-              <label for="hold">אופק החזקה עד מכירה</label>
-              <div class="in-wrap has-unit"><span class="unit" style="inset-inline-start:auto;inset-inline-end:11px">שנים</span>
-                <input class="num" type="number" id="hold" value="7" min="1" max="40" step="1" style="padding-inline-end:52px;padding-inline-start:11px"></div>
-            </div>
-            <div class="field">
-              <label for="appr">עליית ערך שנתית צפויה</label>
-              <div class="in-wrap has-unit"><span class="unit">%</span>
-                <input class="num" type="number" id="appr" value="4" min="-5" max="20" step="0.5"></div>
             </div>
           </div>
           <label class="check" id="refundWrap">
@@ -493,11 +482,6 @@
         <div class="card-h"><h2>דוח רווח שנתי</h2><span class="idx" id="modelTag"></span></div>
         <div class="card-b" id="opBox"></div>
       </section>
-
-      <section class="card">
-        <div class="card-h"><h2>מודל יציאה — קנייה ומכירה</h2><span class="idx" id="exitYears"></span></div>
-        <div class="card-b" id="exitBox"></div>
-      </section>
     </div>
   </div>
 
@@ -511,7 +495,6 @@
         <b>מיסוי שכירות:</b> ברירת מחדל 25% (תושב חוץ, קטגוריה F לטווח ארוך). בקצר־טווח (Alojamento Local) בסיס המס 35% מהברוטו.<br>
         <b>תקופת משכנתא לפי גיל:</b> בנק פורטוגל מגביל את התקופה — עד 40 שנה מתחת לגיל 30, 37 שנה בגילי 30–35, ו-35 שנה מעל 35; ובכל מקרה ההלוואה חייבת להסתיים עד גיל 75 (חלק מהבנקים 80). תושבי חוץ בד״כ מוגבלים ל-30 שנה ו-LTV עד 70%. המחשבון מגביל את התקופה אוטומטית לפי הגיל.<br>
         <b>אומדן ריבית משכנתא (יולי 2026, מכויל לתעריפי שטח):</b> Euribor 12ח׳ (~2.7%) + מרווח לתושב חוץ (בסיס ~0.6%, בר-השגה עם ברוקר). מרווח עולה מעט עם LTV (80%+ ‎+0.1%‎) ומשך (30ש׳ ‎+0.1%‎), ולפי סוג ריבית (מעורבת ‎+0.3%‎, קבועה ‎+0.7%‎); תושב מקומי ‎−0.3%‎. ברירת מחדל ~3.4% תואמת תעריפי שוק בפועל (משתנה 3.2–3.5%). <b>ריבית קמפיין:</b> תומך במבנה דו-שלבי (ריבית מבצע נמוכה לתקופה ראשונה ואז הרגילה) — נפוץ בפורטוגל. יש לדרוס לפי הצעת בנק אמיתית.<br>
-        <b>מודל יציאה:</b> ערך מכירה = מחיר × (1+עליית ערך)^שנים; בניכוי יתרת המשכנתא, עמלת מכירה, קנס פירעון מוקדם ומס רווח הון משוער; בתוספת תזרים מצטבר.<br>
         <b>מס תושב חוץ (Decreto-Lei 97/2026, מ־1.9.2026):</b> תושבי חוץ משלמים IMT אחיד של 7.5% על נדל״ן למגורים (ברירת המחדל במחשבון). ניתן לקבל <b>החזר למדרגות הפרוגרסיביות</b> אם הופכים לתושב מס תוך שנתיים, או משכירים בשכירות ארוכת־טווח (עד €2,300/ח׳) ל־36 חודשים לפחות ב־5 השנים הראשונות. חל על מגורים בלבד — לא על מסחרי/קרקע.<br><br>
         <i>זהו כלי הדמיה בלבד. הנתונים אינם ייעוץ מס/משפטי/פיננסי ואינם מהווים התחייבות. תנאי מימון בפועל תלויים בבנק, בשמאות ובמדיניות עדכנית. אמת מול עו״ד ורו״ח בפורטוגל לפני התקשרות.</i>
       </p>
@@ -602,7 +585,6 @@
     var price=v('price'), use=$('use').value, ltv=v('ltv')/100;
     var appraisal=v('appraisal'), age=v('age');
     var residency=$('residency').value;
-    var hold=v('hold'), appr=v('appr')/100;
 
     // max mortgage term the bank will grant — driven by age
     // (Banco de Portugal age limits + loan must end by age 75; non-residents further capped ~30y)
@@ -823,37 +805,6 @@
       opBreak.push({l:'תשואה ברוטו',v:pct(grossYield)});
       opBreak.push({l:'תשואה נטו (על שווי הנכס)',v:pct(netYield)});
       rows($('opBox'),opBreak);
-
-      // ---- exit model ----
-      var salePrice=price*Math.pow(1+appr,hold);
-      var holdMonths=Math.min(hold*12,n);
-      var balance=am.balAfter[holdMonths];
-      var mortgagePaidHold=am.cumPaid[holdMonths];
-      var sellCost=salePrice*0.05*1.23;                 // agent 5% + VAT
-      var earlyPenalty=balance*(rtype==='var'?0.005:0.02); // variable 0.5% / fixed 2% (legal caps)
-      var acqValueCGT=price+tImt+stampBuy+notary+legal+broker;  // deductible acquisition value
-      var taxableGain=Math.max(0,salePrice-sellCost-acqValueCGT);
-      var cgTax=taxableGain*0.5*0.28;                    // 50% inclusion × ~28% (non-resident estimate)
-      var equityAtSale=salePrice-sellCost-balance-earlyPenalty-cgTax;
-      var cumCF=noiNet*hold - mortgagePaidHold;          // phase-aware (campaign lowers early payments)
-      var totalProfit=equityAtSale+cumCF-cashNeeded;
-      var totalRoi=cashNeeded>0?totalProfit/cashNeeded:0;
-      var annRoi=hold>0?Math.pow(1+totalRoi,1/hold)-1:0;
-
-      $('exitYears').textContent='אחרי '+hold+' שנים';
-      rows($('exitBox'),[
-        {l:'שווי מכירה ('+pct(appr)+' לשנה)',v:eur.format(salePrice)},
-        {l:'עמלת מכירה (5%+מע״מ)',v:'−'+eur.format(sellCost),sub:true},
-        {l:'יתרת משכנתא לסילוק',v:'−'+eur.format(balance),sub:true},
-        {l:'קנס פירעון מוקדם',v:'−'+eur.format(earlyPenalty),sub:true},
-        {l:'מס רווח הון משוער',v:'−'+eur.format(cgTax),sub:true},
-        {l:'הון עצמי שמשתחרר במכירה',v:eur.format(equityAtSale),total:true},
-        {l:'תזרים מצטבר ('+hold+' שנים)',v:(cumCF>=0?'+':'')+eur.format(cumCF)},
-        {l:'בניכוי הון עצמי שהושקע',v:'−'+eur.format(cashNeeded)},
-        {l:'רווח כולל נטו',v:(totalProfit>=0?'+':'')+eur.format(totalProfit),total:true,pos:totalProfit>=0,neg:totalProfit<0},
-        {l:'תשואה כוללת על ההון',v:(totalRoi>=0?'+':'')+pct(totalRoi),pos:totalRoi>=0,neg:totalRoi<0},
-        {l:'תשואה שנתית ממוצעת',v:(annRoi>=0?'+':'')+pct(annRoi),pos:annRoi>=0,neg:annRoi<0}
-      ]);
     }
   }
 
