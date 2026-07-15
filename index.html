@@ -295,29 +295,38 @@
       <section class="card">
         <div class="card-h"><h2>עלויות רכישה חד־פעמיות</h2><span class="idx">02</span></div>
         <div class="card-b">
-          <div class="grid2">
-            <div class="field">
-              <label for="notary">נוטריון + רישום</label>
+          <label class="check" id="shirWrap" style="margin-top:0">
+            <input type="checkbox" id="shirPkg" checked>
+            <span>חבילת <b>ליווי מלא (שיר)</b> — תעריף אחד שמחליף נוטריון, עו״ד+הסכם שכירות, ותיווך+רישום שכירות. <b>לא</b> כולל מסים ועמלת בנק. הורדת הסימון מציגה את פירוט הרכיבים.</span>
+          </label>
+          <div class="grid2" style="margin-top:14px">
+            <div class="field shir-f">
+              <label for="shirPkgAmt">תעריף חבילת הליווי</label>
               <div class="in-wrap has-unit"><span class="unit">€</span>
-                <input class="num" type="number" id="notary" value="1200" min="0" step="100"></div>
+                <input class="num" type="number" id="shirPkgAmt" value="8600" min="0" step="100"></div>
             </div>
             <div class="field">
               <label for="bankfee">עמלות בנק ושמאות</label>
               <div class="in-wrap has-unit"><span class="unit">€</span>
-                <input class="num" type="number" id="bankfee" value="1000" min="0" step="100"></div>
+                <input class="num" type="number" id="bankfee" value="750" min="0" step="50"></div>
             </div>
-            <div class="field">
-              <label for="legal">עו״ד / ליווי משפטי</label>
+            <div class="field itemized-f hidden">
+              <label for="notary">שכ״ט נוטריון + רישום</label>
               <div class="in-wrap has-unit"><span class="unit">€</span>
-                <input class="num" type="number" id="legal" value="2000" min="0" step="250"></div>
+                <input class="num" type="number" id="notary" value="1000" min="0" step="100"></div>
             </div>
-            <div class="field">
-              <label for="broker">תיווך <span class="hint">(בד״כ 0 לקונה)</span></label>
+            <div class="field itemized-f hidden">
+              <label for="legal">שכ״ט עו״ד + הסכם שכירות</label>
               <div class="in-wrap has-unit"><span class="unit">€</span>
-                <input class="num" type="number" id="broker" value="0" min="0" step="500"></div>
+                <input class="num" type="number" id="legal" value="3075" min="0" step="100"></div>
+            </div>
+            <div class="field itemized-f hidden">
+              <label for="broker">תיווך + רישום שכירות</label>
+              <div class="in-wrap has-unit"><span class="unit">€</span>
+                <input class="num" type="number" id="broker" value="1235" min="0" step="100"></div>
             </div>
           </div>
-          <p class="note">מס רכישה (IMT) ובולים מחושבים אוטומטית לפי מדרגות המס בפורטוגל לשנת 2026. מוצגים בפאנל התוצאות.</p>
+          <p class="note">מס רכישה (IMT) ובולים מחושבים אוטומטית לפי מדרגות המס בפורטוגל 2026, ותמיד מוצגים בנפרד בפאנל התוצאות.</p>
         </div>
       </section>
 
@@ -652,8 +661,12 @@
     var stampBuy=price*0.008;
     var stampLoan=loan*(term>=5?0.006:0.005);
     var notary=v('notary'), bankfee=v('bankfee'), legal=v('legal'), broker=v('broker');
+    var pkgOn=$('shirPkg').checked, pkgAmt=v('shirPkgAmt');
+    document.querySelectorAll('.shir-f').forEach(function(el){el.classList.toggle('hidden',!pkgOn);});
+    document.querySelectorAll('.itemized-f').forEach(function(el){el.classList.toggle('hidden',pkgOn);});
+    var softCosts = pkgOn ? pkgAmt : (notary+legal+broker);   // Shir bundle OR itemized soft costs
     var stampComm=bankfee*0.04;   // 4% stamp on bank commissions (TGIS verba 17.3.4)
-    var acqTotal=tImt+stampBuy+stampLoan+stampComm+notary+bankfee+legal+broker;
+    var acqTotal=tImt+stampBuy+stampLoan+stampComm+bankfee+softCosts;
     var cashNeeded=down+acqTotal;
 
     // mortgage — phased amortization (campaign teaser rate then standard)
@@ -789,11 +802,16 @@
       acqRows.push({l:'שיעור מס רכישה אפקטיבי',v:pct(imtR.eff),sub:true});
       acqRows.push({l:'בול רכישה · 0.8% × '+eur.format(price),v:eur.format(stampBuy)});
       acqRows.push({l:'בול משכנתא · '+(term>=5?'0.6%':'0.5%')+' × '+eur.format(loan),v:eur.format(stampLoan)});
-      acqRows.push({l:'נוטריון + רישום',v:eur.format(notary)});
       acqRows.push({l:'עמלות בנק',v:eur.format(bankfee)});
       acqRows.push({l:'בול על עמלות בנק · 4%',v:eur.format(stampComm),sub:true});
-      acqRows.push({l:'עו״ד',v:eur.format(legal)});
-      if(broker>0) acqRows.push({l:'תיווך',v:eur.format(broker)});
+      if(pkgOn){
+        acqRows.push({l:'חבילת ליווי מלא (שיר)',v:eur.format(pkgAmt)});
+        acqRows.push({l:'כולל: נוטריון + רישום · עו״ד + הסכם שכירות · תיווך + רישום שכירות',v:'',sub:true});
+      } else {
+        acqRows.push({l:'שכ״ט נוטריון + רישום',v:eur.format(notary)});
+        acqRows.push({l:'שכ״ט עו״ד + הסכם שכירות',v:eur.format(legal)});
+        acqRows.push({l:'תיווך + רישום שכירות',v:eur.format(broker)});
+      }
       acqRows.push({l:'סה״כ עלויות רכישה',v:eur.format(acqTotal),total:true});
       $('acqPct').textContent=price>0?pct(acqTotal/price)+' מהמחיר':'';
       rows($('acqBox'),acqRows);
