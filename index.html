@@ -343,11 +343,6 @@
                 <input class="num" type="number" id="rentM" value="1100" min="0" step="50"></div>
             </div>
             <div class="field">
-              <label for="vacancy">אחוז אי־תפוסה</label>
-              <div class="in-wrap has-unit"><span class="unit">%</span>
-                <input class="num" type="number" id="vacancy" value="4" min="0" max="50" step="1"></div>
-            </div>
-            <div class="field">
               <label for="mgmtLong">דמי ניהול <span class="hint">(% מהשכ״ד; +מע״מ אם חל)</span></label>
               <div class="in-wrap has-unit"><span class="unit">%</span>
                 <input class="num" type="number" id="mgmtLong" value="8" min="0" max="40" step="1"></div>
@@ -445,13 +440,8 @@
               <div class="in-wrap has-unit"><span class="unit">€</span>
                 <input class="num" type="number" id="acc" value="700" min="0" step="100"></div>
             </div>
-            <div class="field">
-              <label for="maint">תחזוקה ובלאי <span class="hint">(% מההכנסה)</span></label>
-              <div class="in-wrap has-unit"><span class="unit">%</span>
-                <input class="num" type="number" id="maint" value="5" min="0" max="30" step="1"></div>
-            </div>
           </div>
-          <p class="note"><b>שני הביטוחים הם חובה למשכנתא בפורטוגל.</b> ביטוח דירה (multirriscos) הוא סכום קבוע — ~€150–300 לשנה לדירת השקעה. ביטוח חיים תלוי בגיל, בריאות וגובה ההלוואה, לכן מחושב כאחוז מהמשכנתא (~0.2%–0.5% לשנה ללווה יחיד). ניתן לרכוש אותם מחוץ לבנק המלווה ולחסוך עד 60%.<br><br><b>IMI</b> מחושב על ה-VPT (השווי הרשמי, בד״כ נמוך משווי השוק), לכן חישוב על המחיר שמרני. <b>ייצוג פיסקלי:</b> תושב חוץ מחוץ לאיחוד האירופי חייב במינוי נציג מס בפורטוגל (~€150–250/שנה) — כלול בשדה הנה״ח.<br><br><b>מיסוי שכירות לתושב חוץ (מאומת):</b> בהשכרה <b>ארוכת־טווח</b> (קטגוריה F) המס חל על ההכנסה נטו (ניכוי IMI/ועד/ביטוח/ניהול/תחזוקה — לא ריבית). מ־1.1.2026 (OE 2026): שכר דירה עד <b>€2,300/ח׳</b> בחוזה רשום ל־3 שנים+ ⟵ <b>10% שטוח</b>. מעל €2,300 — שיעור יורד לפי משך החוזה: 25% (עד 5ש') / 15% / 10% / 5% (20ש'+). בהשכרה <b>קצרת־טווח</b> (קטגוריה B / AL) בסיס המס הוא 35% מהברוטו (או 50% באזור עצור), כפול 25% ⟵ 8.75% (או 12.5%) אפקטיבי. שיעורי המס נקבעים בבוררים במודל ההשכרה.</p>
+          <p class="note"><b>שני הביטוחים נדרשים ע״י הבנק למשכנתא</b> (לא חובה חוקית, אך תנאי לאישור — וניתן לקנות מכל חברה). ביטוח דירה (multirriscos) הוא סכום קבוע — ~€150–300 לשנה לדירת השקעה. ביטוח חיים תלוי בגיל, בריאות וגובה ההלוואה, לכן מחושב כאחוז מהמשכנתא (~0.2%–0.5% לשנה ללווה יחיד). ניתן לרכוש אותם מחוץ לבנק המלווה ולחסוך עד 60%.<br><br><b>IMI</b> מחושב על ה-VPT (השווי הרשמי, בד״כ נמוך משווי השוק), לכן חישוב על המחיר שמרני. <b>ייצוג פיסקלי:</b> תושב חוץ מחוץ לאיחוד האירופי חייב במינוי נציג מס בפורטוגל (~€150–250/שנה) — כלול בשדה הנה״ח.<br><br><b>מיסוי שכירות לתושב חוץ (מאומת):</b> בהשכרה <b>ארוכת־טווח</b> (קטגוריה F) המס חל על ההכנסה נטו (ניכוי IMI/ועד/ביטוח/ניהול — לא ריבית). מ־1.1.2026 (OE 2026): שכר דירה עד <b>€2,300/ח׳</b> בחוזה רשום ל־3 שנים+ ⟵ <b>10% שטוח</b>. מעל €2,300 — שיעור יורד לפי משך החוזה: 25% (עד 5ש') / 15% / 10% / 5% (20ש'+). בהשכרה <b>קצרת־טווח</b> (קטגוריה B / AL) בסיס המס הוא 35% מהברוטו (או 50% באזור עצור), כפול 25% ⟵ 8.75% (או 12.5%) אפקטיבי. שיעורי המס נקבעים בבוררים במודל ההשכרה.</p>
         </div>
       </section>
     </div>
@@ -676,16 +666,14 @@
     var imiCost=price*(v('imi')/100);
     var insHome=v('insHome'), insLife=loan*(v('insLife')/100);
     var ins=insHome+insLife;
-    var condo=v('condo'), acc=v('acc'), maintP=v('maint')/100;
+    var condo=v('condo'), acc=v('acc');
     var gross, opex, taxableBase, tax, opBreak=[], modelName;
 
     if(model==='long'){
       modelName='ארוך';
-      var occ=1-v('vacancy')/100;
-      gross=v('rentM')*12*occ;
-      var maint=gross*maintP;
+      gross=v('rentM')*12;
       var mgmtLT=gross*(v('mgmtLong')/100);        // management fee (as quoted; add VAT via the % if applicable)
-      opex=imiCost+condo+ins+acc+maint+mgmtLT;
+      opex=imiCost+condo+ins+acc+mgmtLT;
       var noiPre=gross-opex;
       // Category F rate: moderate-rent contracts (≤ €2,300/mo, 3+ yr) pay 10% (OE 2026); else duration-based
       var durRate=v('leaseRate');
@@ -695,13 +683,12 @@
       taxableBase=Math.max(0,noiPre);
       tax=taxableBase*leaseRate;
       opBreak=[
-        {l:'הכנסה ברוטו (בניכוי אי־תפוסה)',v:eur.format(gross)},
+        {l:'הכנסה ברוטו שנתית',v:eur.format(gross)},
         {l:'IMI (ארנונה)',v:'−'+eur.format(imiCost),sub:true},
         {l:'ועד בית',v:'−'+eur.format(condo),sub:true},
         {l:'ביטוח דירה + חיים',v:'−'+eur.format(ins),sub:true},
         {l:'הנה״ח + ייצוג פיסקלי',v:'−'+eur.format(acc),sub:true},
         {l:'דמי ניהול',v:'−'+eur.format(mgmtLT),sub:true},
-        {l:'תחזוקה ובלאי',v:'−'+eur.format(maint),sub:true},
         {l:'רווח תפעולי (לפני מס)',v:eur.format(noiPre),total:true},
         {l:'מס קטגוריה F ('+pct(leaseRate)+((moderate&&leaseRatePct===10)?' · שכר מתון ≤€2,300':' · לפי משך חוזה')+')',v:'−'+eur.format(tax)}
       ];
@@ -714,8 +701,7 @@
       var platform=gross*(v('platform')/100);
       var mgmt=gross*(v('mgmt')/100)*(1+v('vat')/100);
       var util=v('stUtil'), clean=v('cleaning');
-      var maintS=gross*maintP;
-      opex=imiCost+condo+ins+acc+platform+mgmt+util+clean+maintS;
+      opex=imiCost+condo+ins+acc+platform+mgmt+util+clean;
       var noiPreS=gross-opex;
       var coeff=parseFloat($('alZone').value);   // AL coefficient (0.35 / 0.50 containment)
       var irs=v('stIrs')/100;                     // non-resident category B rate
@@ -731,7 +717,6 @@
         {l:'ועד בית',v:'−'+eur.format(condo),sub:true},
         {l:'ביטוח דירה + חיים',v:'−'+eur.format(ins),sub:true},
         {l:'הנה״ח + ייצוג פיסקלי',v:'−'+eur.format(acc),sub:true},
-        {l:'תחזוקה ובלאי',v:'−'+eur.format(maintS),sub:true},
         {l:'רווח תפעולי (לפני מס)',v:eur.format(noiPreS),total:true},
         {l:'מס AL ('+pct(coeff)+'×'+pct(irs)+' = '+pct(coeff*irs)+' אפקטיבי)',v:'−'+eur.format(tax)}
       ];
