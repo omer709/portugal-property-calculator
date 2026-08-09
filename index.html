@@ -290,9 +290,17 @@
           </label>
           <div class="grid2" style="margin-top:14px">
             <div class="field shir-f">
-              <label for="shirPkgAmt">תעריף חבילת הליווי</label>
-              <div class="in-wrap has-unit"><span class="unit">€</span>
-                <input class="num" type="number" id="shirPkgAmt" value="8600" min="0" step="100"></div>
+              <label for="shirDealType">סוג עסקה</label>
+              <select id="shirDealType">
+                <option value="2">נכס קיים · 2%</option>
+                <option value="4">פריסייל / ליווי ארוך · 4%</option>
+              </select>
+            </div>
+            <div class="field shir-f">
+              <label for="shirPkgPct">תעריף ליווי <span class="hint">(% מעלות הנכס)</span></label>
+              <div class="in-wrap has-unit"><span class="unit">%</span>
+                <input class="num" type="number" id="shirPkgPct" value="2" min="0" max="10" step="0.5"></div>
+              <span class="hint" id="shirPkgHint" style="color:var(--accent-ink);font-weight:600"></span>
             </div>
             <div class="field">
               <label for="bankfee">עמלות בנק ושמאות</label>
@@ -342,7 +350,7 @@
             <div class="field">
               <label for="mgmtLong">דמי ניהול <span class="hint">(% מהשכ״ד; +מע״מ אם חל)</span></label>
               <div class="in-wrap has-unit"><span class="unit">%</span>
-                <input class="num" type="number" id="mgmtLong" value="6" min="0" max="40" step="1"></div>
+                <input class="num" type="number" id="mgmtLong" value="8" min="0" max="40" step="1"></div>
             </div>
             <div class="field" style="grid-column:1/-1">
               <label for="leaseRate">משך חוזה השכירות <span class="hint">(שכר ≤ €2,300/ח׳ ⟵ 10%; אחרת לפי משך)</span></label>
@@ -643,7 +651,8 @@
     var stampBuy=price*0.008;
     var stampLoan=loan*(term>=5?0.006:0.005);
     var notary=v('notary'), bankfee=v('bankfee'), legal=v('legal'), broker=v('broker');
-    var pkgOn=$('shirPkg').checked, pkgAmt=v('shirPkgAmt');
+    var pkgOn=$('shirPkg').checked, pkgPct=v('shirPkgPct'), pkgAmt=price*(pkgPct/100);
+    $('shirPkgHint').textContent='= '+eur.format(pkgAmt);
     document.querySelectorAll('.shir-f').forEach(function(el){el.classList.toggle('hidden',!pkgOn);});
     document.querySelectorAll('.itemized-f').forEach(function(el){el.classList.toggle('hidden',pkgOn);});
     var softCosts = pkgOn ? pkgAmt : (notary+legal+broker);   // Shir bundle OR itemized soft costs
@@ -787,7 +796,7 @@
       acqRows.push({l:'עמלות בנק',v:eur.format(bankfee)});
       acqRows.push({l:'בול על עמלות בנק · 4%',v:eur.format(stampComm),sub:true});
       if(pkgOn){
-        acqRows.push({l:'חבילת ליווי מלא (שיר)',v:eur.format(pkgAmt)});
+        acqRows.push({l:'חבילת ליווי מלא (שיר) · '+pct(pkgPct/100)+' מהמחיר',v:eur.format(pkgAmt)});
         acqRows.push({l:'כולל: נוטריון + רישום · עו״ד + הסכם שכירות · תיווך + רישום שכירות',v:'',sub:true});
       } else {
         acqRows.push({l:'שכ״ט נוטריון + רישום',v:eur.format(notary)});
@@ -836,6 +845,9 @@
   }
   $('age').addEventListener('input',function(){ syncLife(); calc(); });
 
+  // Shir deal type quick-sets the package % (existing 2% / pre-sale 4%); % stays editable
+  $('shirDealType').addEventListener('change',function(){ $('shirPkgPct').value=$('shirDealType').value; calc(); });
+
   // recalc on any input
   document.querySelectorAll('.app input, .app select').forEach(function(el){
     el.addEventListener('input',calc);
@@ -853,6 +865,7 @@
   calc();
 })();
 </script>
+
 
 </body>
 </html>
