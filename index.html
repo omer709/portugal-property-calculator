@@ -226,7 +226,7 @@
               </select>
             </div>
             <div class="field">
-              <label for="age">גיל הקונה <span class="hint">(קובע תקופת משכנתא, IMT Jovem וביטוח חיים)</span></label>
+              <label for="age">גיל הקונה <span class="hint">(קובע תקופת משכנתא ו-IMT Jovem)</span></label>
               <input class="num" type="number" id="age" value="45" min="18" max="90" step="1">
             </div>
             <div class="field">
@@ -431,22 +431,12 @@
                 <input class="num" type="number" id="condo" value="600" min="0" step="50"></div>
             </div>
             <div class="field">
-              <label for="insHome">ביטוח דירה — multirriscos <span class="hint">(€ לשנה)</span></label>
-              <div class="in-wrap has-unit"><span class="unit">€</span>
-                <input class="num" type="number" id="insHome" value="200" min="0" step="25"></div>
-            </div>
-            <div class="field">
-              <label for="insLife">ביטוח חיים <span class="hint">(% מהמשכנתא לשנה)</span></label>
-              <div class="in-wrap has-unit"><span class="unit">%</span>
-                <input class="num" type="number" id="insLife" value="0.35" min="0" max="2" step="0.05"></div>
-            </div>
-            <div class="field">
               <label for="acc">הנה״ח + ייצוג פיסקלי <span class="hint">(נציג מס חובה לתושב חוץ)</span></label>
               <div class="in-wrap has-unit"><span class="unit">€</span>
                 <input class="num" type="number" id="acc" value="400" min="0" step="50"></div>
             </div>
           </div>
-          <p class="note"><b>ביטוחים:</b> ביטוח דירה (multirriscos) ~€150–300/שנה; ביטוח חיים מחושב כאחוז מההלוואה (מתעדכן לפי הגיל). שניהם נדרשים ע״י הבנק למשכנתא.<br><br><b>IMI</b> מחושב על ה-VPT (השווי הרשמי, בד״כ נמוך משווי השוק), לכן חישוב על המחיר שמרני. <b>ייצוג פיסקלי:</b> תושב חוץ מחוץ לאיחוד האירופי חייב במינוי נציג מס בפורטוגל (~€150–250/שנה) — כלול בשדה הנה״ח.<br><br><b>מיסוי שכירות לתושב חוץ (מאומת):</b> בהשכרה <b>ארוכת־טווח</b> (קטגוריה F) המס חל על ההכנסה נטו (ניכוי IMI/ועד/ניהול — לא ריבית). מ־1.1.2026 (OE 2026): שכר דירה עד <b>€2,300/ח׳</b> בחוזה רשום ל־3 שנים+ ⟵ <b>10% שטוח</b>. מעל €2,300 — שיעור יורד לפי משך החוזה: 25% (עד 5ש') / 15% / 10% / 5% (20ש'+). בהשכרה <b>קצרת־טווח</b> (קטגוריה B / AL) בסיס המס הוא 35% מהברוטו (או 50% באזור עצור), כפול 25% ⟵ 8.75% (או 12.5%) אפקטיבי. שיעורי המס נקבעים בבוררים במודל ההשכרה.</p>
+          <p class="note"><b>IMI</b> מחושב על ה-VPT (השווי הרשמי, בד״כ נמוך משווי השוק), לכן חישוב על המחיר שמרני. <b>ייצוג פיסקלי:</b> תושב חוץ מחוץ לאיחוד האירופי חייב במינוי נציג מס בפורטוגל (~€150–250/שנה) — כלול בשדה הנה״ח.<br><br><b>מיסוי שכירות לתושב חוץ (מאומת):</b> בהשכרה <b>ארוכת־טווח</b> (קטגוריה F) המס חל על ההכנסה נטו (ניכוי IMI/ועד/ניהול — לא ריבית). מ־1.1.2026 (OE 2026): שכר דירה עד <b>€2,300/ח׳</b> בחוזה רשום ל־3 שנים+ ⟵ <b>10% שטוח</b>. מעל €2,300 — שיעור יורד לפי משך החוזה: 25% (עד 5ש') / 15% / 10% / 5% (20ש'+). בהשכרה <b>קצרת־טווח</b> (קטגוריה B / AL) בסיס המס הוא 35% מהברוטו (או 50% באזור עצור), כפול 25% ⟵ 8.75% (או 12.5%) אפקטיבי. שיעורי המס נקבעים בבוררים במודל ההשכרה.</p>
         </div>
       </section>
     </div>
@@ -668,8 +658,6 @@
 
     // ---- income model ----
     var imiCost=price*(v('imi')/100);
-    var insHome=v('insHome'), insLife=loan*(v('insLife')/100);
-    var ins=insHome+insLife;
     var condo=v('condo'), acc=v('acc');
     var gross, opex, taxableBase, tax, opBreak=[], modelName;
 
@@ -677,7 +665,7 @@
       modelName='ארוך';
       gross=v('rentM')*12;
       var mgmtLT=gross*(v('mgmtLong')/100);        // management fee (as quoted; add VAT via the % if applicable)
-      opex=imiCost+condo+ins+acc+mgmtLT;
+      opex=imiCost+condo+acc+mgmtLT;
       var noiPre=gross-opex;
       // Category F rate: moderate-rent contracts (≤ €2,300/mo, 3+ yr) pay 10% (OE 2026); else duration-based
       var durRate=v('leaseRate');
@@ -690,7 +678,6 @@
         {l:'הכנסה ברוטו שנתית',v:eur.format(gross)},
         {l:'IMI (ארנונה)',v:'−'+eur.format(imiCost),sub:true},
         {l:'ועד בית',v:'−'+eur.format(condo),sub:true},
-        {l:'ביטוח דירה + חיים',v:'−'+eur.format(ins),sub:true},
         {l:'הנה״ח + ייצוג פיסקלי',v:'−'+eur.format(acc),sub:true},
         {l:'דמי ניהול',v:'−'+eur.format(mgmtLT),sub:true},
         {l:'רווח תפעולי (לפני מס)',v:eur.format(noiPre),total:true},
@@ -709,7 +696,7 @@
       var mgmtBase=Math.max(0, gross-platform-clean-cardFee);
       var mgmt=mgmtBase*(v('mgmt')/100)*(1+v('vat')/100);
       var util=v('stUtil');
-      opex=imiCost+condo+ins+acc+platform+clean+cardFee+mgmt+util;
+      opex=imiCost+condo+acc+platform+clean+cardFee+mgmt+util;
       var noiPreS=gross-opex;
       var coeff=parseFloat($('alZone').value);   // AL coefficient (0.35 / 0.50 containment)
       var irs=v('stIrs')/100;                     // non-resident category B rate
@@ -725,7 +712,6 @@
         {l:'חשמל/מים/אינטרנט',v:'−'+eur.format(util),sub:true},
         {l:'IMI',v:'−'+eur.format(imiCost),sub:true},
         {l:'ועד בית',v:'−'+eur.format(condo),sub:true},
-        {l:'ביטוח דירה + חיים',v:'−'+eur.format(ins),sub:true},
         {l:'הנה״ח + ייצוג פיסקלי',v:'−'+eur.format(acc),sub:true},
         {l:'רווח תפעולי (לפני מס)',v:eur.format(noiPreS),total:true},
         {l:'מס AL ('+pct(coeff)+'×'+pct(irs)+' = '+pct(coeff*irs)+' אפקטיבי)',v:'−'+eur.format(tax)}
@@ -829,17 +815,6 @@
   var rateTouched=false;
   $('rate').addEventListener('input',function(){rateTouched=true;});
 
-  // age -> suggested life-insurance rate (unless user edited it manually)
-  var lifeTouched=false;
-  $('insLife').addEventListener('input',function(){lifeTouched=true;});
-  function syncLife(){
-    if(lifeTouched) return;
-    var age=v('age');
-    var r=Math.max(0.15,Math.min(1.2,0.20+Math.max(0,age-30)*0.02));
-    $('insLife').value=r.toFixed(2);
-  }
-  $('age').addEventListener('input',function(){ syncLife(); calc(); });
-
   // Shir deal type quick-sets the package % (existing 2% / pre-sale 4%); % stays editable
   $('shirDealType').addEventListener('change',function(){ $('shirPkgPct').value=$('shirDealType').value; calc(); });
 
@@ -856,7 +831,6 @@
     root.setAttribute('data-theme',cur==='dark'?'light':'dark');
   });
 
-  syncLife();
   calc();
 })();
 </script>
