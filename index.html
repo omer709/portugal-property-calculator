@@ -376,9 +376,14 @@
                 <input class="num" type="number" id="platform" value="15" min="0" max="30" step="0.5"></div>
             </div>
             <div class="field">
-              <label for="mgmt">דמי ניהול</label>
+              <label for="mgmt">דמי ניהול <span class="hint">(מהנטו +מע״מ · יורד 25→22% ב-4 שנים)</span></label>
               <div class="in-wrap has-unit"><span class="unit">%</span>
-                <input class="num" type="number" id="mgmt" value="20" min="0" max="40" step="1"></div>
+                <input class="num" type="number" id="mgmt" value="25" min="0" max="40" step="1"></div>
+            </div>
+            <div class="field">
+              <label for="cardFee">עמלות סליקה ותפעול <span class="hint">(% מהברוטו)</span></label>
+              <div class="in-wrap has-unit"><span class="unit">%</span>
+                <input class="num" type="number" id="cardFee" value="1.5" min="0" max="10" step="0.5"></div>
             </div>
             <div class="field">
               <label for="vat">מע״מ על דמי הניהול</label>
@@ -685,9 +690,13 @@
       var occS=v('occ')/100;
       gross=v('nightly')*365*occS;
       var platform=gross*(v('platform')/100);
-      var mgmt=gross*(v('mgmt')/100)*(1+v('vat')/100);
-      var util=v('stUtil'), clean=v('cleaning');
-      opex=imiCost+condo+acc+platform+mgmt+util+clean;
+      var clean=v('cleaning');
+      var cardFee=gross*(v('cardFee')/100);
+      // management fee (25%+VAT) is charged on NET income — after platform, cleaning & processing fees
+      var mgmtBase=Math.max(0, gross-platform-clean-cardFee);
+      var mgmt=mgmtBase*(v('mgmt')/100)*(1+v('vat')/100);
+      var util=v('stUtil');
+      opex=imiCost+condo+acc+platform+clean+cardFee+mgmt+util;
       var noiPreS=gross-opex;
       var coeff=parseFloat($('alZone').value);   // AL coefficient (0.35 / 0.50 containment)
       var irs=v('stIrs')/100;                     // non-resident category B rate
@@ -696,9 +705,11 @@
       opBreak=[
         {l:'הכנסה ברוטו ('+Math.round(365*occS)+' לילות)',v:eur.format(gross)},
         {l:'עמלת פלטפורמה',v:'−'+eur.format(platform),sub:true},
-        {l:'דמי ניהול + מע״מ',v:'−'+eur.format(mgmt),sub:true},
-        {l:'חשמל/מים/אינטרנט',v:'−'+eur.format(util),sub:true},
         {l:'ניקיון',v:'−'+eur.format(clean),sub:true},
+        {l:'עמלות סליקה ותפעול',v:'−'+eur.format(cardFee),sub:true},
+        {l:'הכנסה נטו (בסיס לדמי ניהול)',v:eur.format(mgmtBase),total:true},
+        {l:'דמי ניהול ('+pct(v('mgmt')/100)+' +מע״מ, מהנטו)',v:'−'+eur.format(mgmt),sub:true},
+        {l:'חשמל/מים/אינטרנט',v:'−'+eur.format(util),sub:true},
         {l:'IMI',v:'−'+eur.format(imiCost),sub:true},
         {l:'ועד בית',v:'−'+eur.format(condo),sub:true},
         {l:'הנה״ח + ייצוג פיסקלי',v:'−'+eur.format(acc),sub:true},
